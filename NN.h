@@ -27,6 +27,7 @@ public:
     double test();
     vector<double> train();
     void clear();
+    const vector<int> BINARY_VALUES = {8, 4, 2, 1};
     
 private:
     int num_train_inputs;

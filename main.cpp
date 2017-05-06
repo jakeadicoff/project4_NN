@@ -13,14 +13,16 @@ int main(int argc, char** argv) {
     
     int max_epochs = 50;
     
-    Problem trainProb = read_file(trainFile);
-    Problem testProb = read_file(testFile);
+    
     
     string run_command;
     cout << "Run all the tests? (y/n)" << endl;
     cin >> run_command;
     
     if(run_command == "n") {
+        Problem trainProb = read_file(trainFile);
+        Problem testProb = read_file(testFile);
+        
         NN net(learningRate, trainProb, testProb, outputNodes,max_epochs);
         
         vector<double> results = net.train();
@@ -42,9 +44,11 @@ int main(int argc, char** argv) {
         
         int max_epochs = 50;
         
-        vector<double> lr_vector {0.01, 0.1, 0.5, 1.0};
+        vector<double> lr_vector {0.005, 0.01, 0.05, 0.1};
         // set map size
-        for(int i = 0; i < 2; ++i) {
+        
+        
+        for(int i = 1; i < 2; ++i) {
             string train_file, test_file;
             
             if(i == 0) {
@@ -56,13 +60,13 @@ int main(int argc, char** argv) {
                 test_file = "optdigits-32x32.tes";
             }
             
-            for(int j = 0; j < 2; ++j) {
+            for(int j = 0; j < 1; ++j) {
                 
                 int output_nodes;
-                if(j == 0) output_nodes = 1;
+                if(j == 0) output_nodes = 4;
                 else output_nodes = 10;
                 
-                for(int lr = 0; lr < 4; ++lr) {
+                for(int lr = 0; lr < lr_vector.size(); ++lr) {
                     
                     double learning_rate = lr_vector[lr];
                     Problem train_prob = read_file(train_file);
@@ -81,12 +85,12 @@ int main(int argc, char** argv) {
                     
                     double run_time = (end_time - start_time)/CLOCKS_PER_SEC;
                     
-                    for(int epoch = 0; epoch < results.size(); ++ epoch) {
-                        output_string += to_string(learning_rate) + "," + to_string(train_prob.map_size) + "," + to_string(output_nodes) + "," + to_string(epoch) + "," + to_string(results[epoch]) + ", " + to_string(run_time) + "\n";
-                    }
+                    //                    for(int epoch = 0; epoch < results.size(); ++ epoch) {
+                    //                        output_string += to_string(learning_rate) + "," + to_string(train_prob.map_size) + "," + to_string(output_nodes) + "," + to_string(epoch) + "," + to_string(results[epoch]) + ", " + to_string(run_time) + "\n";
+                    //                    }
                     
-//                     for runtimes
-//                    output_string += to_string(learning_rate) + "," + to_string(train_prob.map_size) + "," + to_string(output_nodes) + "," + to_string(49) + "," + to_string(results.back()) + ", "+ to_string(run_time) + "\n";
+                    
+                    output_string += to_string(learning_rate) + "," + to_string(train_prob.map_size) + "," + to_string(output_nodes) + "," + to_string(49) + "," + to_string(results.back()) + ", "+ to_string(run_time) + "\n";
                     
                     
                     
@@ -96,8 +100,9 @@ int main(int argc, char** argv) {
         }
         
         output_file.open(nn_filename);
-        output_file << output_string;
+        //output_file << output_string;
         output_file.close();
+        cout << output_string << endl;
     }
     
     

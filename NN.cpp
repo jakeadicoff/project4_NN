@@ -37,7 +37,7 @@ void NN::clear() {
     for(int i = 0; i < num_outputs; i++) {
         outputs.clear();
     }
-
+    
 }
 
 
@@ -80,17 +80,39 @@ vector<double> NN::train() {
 
 void NN::update_weights(int output_index, int input_index, double g, double g_prime, double target) {
     //double output_value;
-    if(num_outputs > 1) {
+    if(num_outputs == 10) {
         //output_value = g;
         if(output_index != target) {
             target = 0.0; // if index does not match target digit
         } else {
             target = 1.0; // if index matches target
         }
-    } else {
+    }
+    else if(num_outputs == 1){
         // no need to set target, as its already set
         //output_value = int ((g*10)); // got rid of + 0.5
         target = (target + .5) / 10;
+    }
+    else if(num_outputs == 4) {
+        int remainder = target;
+        //cout << target << ":\t";
+        for(int i = 0; i < output_index; ++i) {
+            if(remainder >= BINARY_VALUES[i]) {
+                remainder -= BINARY_VALUES[i];
+                //cout << 1 << "\t";
+            }
+            else {
+                //cout << 0 << "\t";
+            }
+        }
+        remainder -= BINARY_VALUES[output_index];
+        if(remainder < 0) {
+            target = 0;
+        }
+        else {
+            target = 1;
+        }
+        //cout << target << endl;
     }
     for(int i = 0; i < map_size+1; i++) {
         if(i < map_size) {
@@ -124,6 +146,7 @@ double NN::test() {
         
         double answer_value = -1;
         int answer = 0;
+        vector<int> binary_nodes;
         
         // calculate the output at every node
         for(int output = 0; output < num_outputs; output++) {
@@ -145,23 +168,41 @@ double NN::test() {
             //cout << dot_product << endl;
             double g = activation_function(dot_product);
             
+            
+            
             if(num_outputs == 1) {
-                //cout << int(10*g - .5) << endl;
-                //cout << target << endl << endl;
+                
                 if(target == int(10*g - .5)) {
                     num_correct++;
                 }
                 
             }
-            
-            
-            else if(g > answer_value) {
+            if(g > answer_value) {
                 
                 answer = output;
                 answer_value = g;
             }
+            if(num_outputs == 4) {
+                if(g < 0.5) {
+                    binary_nodes.push_back(0);
+                }
+                else {
+                    binary_nodes.push_back(1);
+                }
+            }
         }
-        if(num_outputs == 10) {
+        
+        
+        if(num_outputs == 4) {
+            int answer = 0;
+            for(int i = 0; i < 4; ++i) {
+                answer += binary_nodes[i] * BINARY_VALUES[i];
+            }
+            if(answer == target) {
+                ++ num_correct;
+            }
+        }
+        else if(num_outputs == 10) {
             //cout << "Answer = " << answer << endl;
             //cout << "Target = " << target << endl << endl;
             if(answer == target) {
